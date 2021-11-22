@@ -10,38 +10,38 @@ const { Movie, validate } = require('../models/movies');
 
 
 
+ 
+
+  // ----------------------------------------------------
+
   router.post('/',async(req, res) => {
 
- 
-    const result = validate(req.body)
   
-    if(result.error)
-    {
-      res.status(400).json(result.error);
-      return;
-    }
-let movie = new Movie(req.body);
+    let result = validate(req.body)
 
-try {
+  if (result.error) {
+    res.status(400).json(result.error);
+    return;
+  }
+
+  let movie = new Movie(req.body);
+
+  try {
+
     movie = await movie.save();
     res.location(`/${movie._id}`)
-        .status(201)
-        .json(movie);
-}
-  catch
-  {
-    res.status(500).json(result.error);
-  }
-  
-  movies.push(movie);
-  
-    res.location(`/movies/${newMovieId}`)
       .status(201)
       .json(movie);
-     
-    console.log(`book name is ${movie.title} number of book(s) is ${movies.length}`);
+  }
+  catch {
+    res.status(500).json(result.error);
+  }
+
+  
   
   });
+
+  //----------------------------------------------------
 
 router.get('/',async(req, res) => {
 
@@ -107,18 +107,20 @@ router.get('/:id', validationMiddleware.validJWTNeeded, async (req, res) => {
   
   
   
-  router.delete('/id',async(req, res) => {
 
+
+  router.delete('/:id', async (req, res) => {
 
     try {
       const movie = await Movie.findByIdAndDelete(req.params.id)
       res.send(movie)
     }
     catch {
-      res.status(404).json(`book with that ID ${req.params.id} was not found`);
+      res.status(404).json(`movie with that ID ${req.params.id} was not found`);
     }
-
+  
   })
+  
   
   
   router.put('/:id',async(req, res) => {
