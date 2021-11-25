@@ -1,31 +1,29 @@
 const Joi = require('joi');
-const mongoose = require('mongoose');
+	const mongoose = require('mongoose');
+	
 
-const movieSchema = new mongoose.Schema({
-    title: String,
-    year: Number,
-    runtime:Number,
-   /* nested: { categories : {}}, */
+	const movieSchema = new mongoose.Schema({
+        title: String,
+        year: Number,
+        runtime:Number,
+	   /* tags: [String] */
+	})
+	
 
-    tags: [String]
+	const Movie = mongoose.model('Movie', movieSchema);
+	
 
-})
+	function validateMovie(movie) {
+	    const schema = Joi.object({
+	        title: String,
+            year: Number,
+            runtime:Number,
+	        /*tags: Joi.array().items(Joi.string()) */
+	    })
+	    return schema.validate(movie);
+	}
+	
 
-const Movie = mongoose.model('Movie', movieSchema);
-
-function validateMovie(Movie) {
-    const schema = Joi.object({
-        title: Joi.string().min(3),
-        year: Joi.number().integer().min(1500),
-      
-        
-        runtime: Joi.number(),
-        tags: Joi.array().items(Joi.string())
-
-    })
-    return schema.validate(movie);
-}
-
-exports.Movie = Movie;
-exports.validate = validateMovie;
+	exports.Movie = Movie;
+	exports.validate = validateMovie;
 

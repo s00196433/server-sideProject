@@ -50,8 +50,8 @@ router.get('/',async(req, res) => {
   let filter = {};
 
   if (title) {
-    filter.title = { $regex: `${title}`, $options: 'i' }
-
+    filter.title = { $regex: `${title}`, $options: 'i' };
+   
   }
  
   const yearNumber = parseInt(year)
@@ -75,8 +75,8 @@ router.get('/',async(req, res) => {
     const movies = await Movie.
     find(filter).
     limit(limitNumber).
-    sort({runtime : 1, year : -1}).
-    select('runtime year') 
+    sort({runtime : 1, year : -1})
+   
 
     res.json(movies);
 
