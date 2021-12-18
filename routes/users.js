@@ -7,7 +7,6 @@ const router = express.Router();
 
 const { User, validate } = require('../models/user');
 
-
 router.post('/', async (req, res) => {
 
   let result = validate(req.body)
@@ -17,11 +16,44 @@ router.post('/', async (req, res) => {
     return;
   }
 
-
+// check if a user with that e-mail already exists
   let user = await User.findOne({ email: req.body.email });
 
   if (user) return res.status(400).send('User already registered');
 
+  // encrypt the password using a salt 
+  
+  const salt = crypto.randomBytes(16).toString('base64');
+  const hash = crypto.createHmac('sha512', salt).update(req.body.password).digest('base64');
+  req.body.password = salt + '$' + hash;
+
+
+  user = new User(req.body);
+  user = await user.save();
+
+  // note we don't want to return the entire user object as that includes the password.
+
+  res.location(user._id).
+    status(201).
+    json(user._id);
+})
+
+/*router.post('/', async (req, res) => {
+
+  let result = validate(req.body)
+
+  if (result.error) {
+    res.status(400).json(result.error);
+    return;
+  }
+
+// check if a user with that e-mail already exists
+  let user = await User.findOne({ email: req.body.email });
+
+  if (user) return res.status(400).send('User already registered');
+
+  // encrypt the password using a salt 
+  
   const salt = crypto.randomBytes(16).toString('base64');
   const hash = crypto.createHmac('sha512', salt).update(req.body.password).digest('base64');
   req.body.password = salt + '$' + hash;
@@ -29,14 +61,14 @@ router.post('/', async (req, res) => {
   user = new User(req.body);
   user = await user.save();
 
-  
+  // note we don't want to return the entire user object as that includes the password.
 
   res.location(user._id).
     status(201).
     json(user._id);
-})
+}) */
 
-router.get('/:id', async (req, res) => {
+router.get('/id', async (req, res) => {
   try {
 
     const user = await User.findById(req.params.id);
@@ -53,12 +85,18 @@ router.get('/:id', async (req, res) => {
 
 })
 
+router.get('/', async (req, res) => {
+
+  const users = await User.
+    find()
+
+  res.json(users);
+})
 
 
 
 
-
-router.delete('/:id', async (req, res) => {
+router.delete('/id', async (req, res) => {
 
   try {
     user = await User.findByIdAndDelete(req.params.id);
@@ -80,7 +118,7 @@ const credentials = require('../config')
 
 
 
-let secret =  credentials.jwtsecretkey 
+let secret =  credentials.jwtsecretkey // 
 
 
 module.exports = router

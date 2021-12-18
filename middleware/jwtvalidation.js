@@ -1,10 +1,22 @@
+
+   
 const jwt = require('jsonwebtoken');
 
 const  crypto = require( 'crypto');
 
-let secret =  'unasverySecretSecret' 
+const credentials = require('../config')
 
 
+
+
+let secret =  credentials.jwtsecretkey // 
+
+
+
+
+// this 
+// a) checks that there is a Bearer token in the authorization header
+// b) the token is valid using the secret
 
 function validJWTNeeded (req, res, next) {
     if (req.headers['authorization']) {
@@ -24,8 +36,5 @@ function validJWTNeeded (req, res, next) {
         return res.status(401).send();
     }
 };
-
-const credentials = require('../config')
-
 
 module.exports = { validJWTNeeded, }
